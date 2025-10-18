@@ -14,12 +14,12 @@ router = DefaultRouter()
 
 # URL patterns for individual views
 urlpatterns = [
-    # Book CRUD endpoints - Individual views
+    # Book CRUD endpoints - Individual views following RESTful conventions
     path('books/', views.BookListView.as_view(), name='book-list'),
     path('books/<int:pk>/', views.BookDetailView.as_view(), name='book-detail'),
     path('books/create/', views.BookCreateView.as_view(), name='book-create'),
-    path('books/<int:pk>/update/', views.BookUpdateView.as_view(), name='book-update'),
-    path('books/<int:pk>/delete/', views.BookDeleteView.as_view(), name='book-delete'),
+    path('books/update/<int:pk>/', views.BookUpdateView.as_view(), name='book-update'),
+    path('books/delete/<int:pk>/', views.BookDeleteView.as_view(), name='book-delete'),
     
     # Book CRUD endpoints - Combined views
     path('books/combined/', views.BookListCreateView.as_view(), name='book-list-create'),
