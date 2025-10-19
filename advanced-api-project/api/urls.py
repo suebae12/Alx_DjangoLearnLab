@@ -31,6 +31,8 @@ urlpatterns = [
     
     # Custom endpoints
     path('stats/', views.book_stats, name='book-stats'),
+    path('search/', views.book_search, name='book-search'),
+    path('authors/analytics/', views.author_analytics, name='author-analytics'),
     
     # Include router URLs (for future ViewSets)
     path('', include(router.urls)),

@@ -6,9 +6,13 @@ This project demonstrates the implementation of custom views using Django REST F
 
 - **Generic Views Implementation**: Complete CRUD operations using DRF generic views
 - **Permission System**: Role-based access control with different permission levels
-- **Filtering & Search**: Advanced filtering, searching, and ordering capabilities
+- **Advanced Filtering**: Comprehensive filtering capabilities with custom filter classes
+- **Search Functionality**: Multi-field search with DRF SearchFilter and custom search methods
+- **Ordering Capabilities**: Flexible ordering options for all list endpoints
 - **Custom Validation**: Custom serializers with validation logic
-- **API Documentation**: Comprehensive endpoint documentation
+- **Performance Optimization**: Query optimization with select_related and prefetch_related
+- **Analytics Endpoints**: Custom endpoints for statistics and analytics
+- **API Documentation**: Comprehensive endpoint documentation with examples
 
 ## Project Structure
 
@@ -20,7 +24,8 @@ advanced-api-project/
 ├── api/
 │   ├── models.py            # Book and Author models
 │   ├── serializers.py       # DRF serializers with custom validation
-│   ├── views.py             # Generic views implementation
+│   ├── views.py             # Generic views implementation with enhanced filtering
+│   ├── filters.py           # Custom filter classes for advanced filtering
 │   ├── urls.py              # API endpoint routing
 │   └── management/
 │       └── commands/
@@ -74,6 +79,8 @@ advanced-api-project/
 | Method | Endpoint | Description | Permission |
 |--------|----------|-------------|------------|
 | GET | `/api/stats/` | Get book statistics | AllowAny |
+| GET | `/api/search/` | Advanced search with multiple criteria | AllowAny |
+| GET | `/api/authors/analytics/` | Author analytics and statistics | AllowAny |
 
 ## Generic Views Implementation
 
@@ -134,31 +141,65 @@ permission_classes = [permissions.IsAuthenticated]
 permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 ```
 
-## Filtering and Search
+## Advanced Filtering, Search, and Ordering
 
-### Available Filters
-- **Author**: Filter books by author ID
-- **Publication Year**: Filter books by publication year
-- **Search**: Search in title and author name
-- **Ordering**: Sort by title, publication year, or author name
+### Comprehensive Filtering Options
+
+#### Title Filtering
+- `title`: Partial match
+- `title_exact`: Exact match
+- `title_startswith`: Starts with
+
+#### Author Filtering
+- `author__name`: Author name partial match
+- `author__name_exact`: Exact author name
+- `author`: Author ID
+
+#### Publication Year Filtering
+- `publication_year`: Exact year
+- `publication_year__gte`: Year >= value
+- `publication_year__lte`: Year <= value
+- `publication_year__gt`: Year > value
+- `publication_year__lt`: Year < value
+- `publication_year_range_min/max`: Year range
+
+#### ID and Search Filtering
+- `id`: Single book ID
+- `id__in`: Multiple book IDs (comma-separated)
+- `search`: Combined search in title and author name
+
+### Search Functionality
+- **DRF SearchFilter**: Searches in title and author name
+- **Custom Search Endpoint**: Advanced search with multiple criteria
+
+### Ordering Options
+- `title`, `-title`: Order by title (ascending/descending)
+- `publication_year`, `-publication_year`: Order by publication year
+- `author__name`, `-author__name`: Order by author name
+- `id`, `-id`: Order by book ID
 
 ### Example Usage
 
 ```bash
-# Filter by author
-GET /api/books/?author=1
+# Basic filtering
+GET /api/books/?title=Harry
+GET /api/books/?author__name=Rowling
+GET /api/books/?publication_year__gte=1997
 
-# Filter by publication year
-GET /api/books/?publication_year=1997
+# Advanced filtering
+GET /api/books/?title_startswith=Harry&publication_year__gte=1990&ordering=-publication_year
 
-# Search by title
-GET /api/books/?search=Harry
+# Range filtering
+GET /api/books/?publication_year_range_min=1900&publication_year_range_max=2000
 
-# Order by publication year
-GET /api/books/?ordering=-publication_year
+# Combined search
+GET /api/books/?search=Potter&author__name=Rowling
 
-# Combined filters
-GET /api/books/?author=1&publication_year__gte=1990&ordering=title
+# Multiple ID filtering
+GET /api/books/?id__in=1,2,3&ordering=title
+
+# Advanced search endpoint
+GET /api/search/?q=Harry&year_min=1997&limit=5
 ```
 
 ## Custom Validation
